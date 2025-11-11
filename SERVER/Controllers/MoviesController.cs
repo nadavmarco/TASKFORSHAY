@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TASKFORSHAY.Models;
+
 namespace TASKFORSHAY.Controllers
 {
     [ApiController]
@@ -22,8 +23,6 @@ namespace TASKFORSHAY.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-
         }
 
         [HttpPost]

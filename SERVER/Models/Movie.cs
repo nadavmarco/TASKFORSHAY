@@ -8,6 +8,7 @@ namespace TASKFORSHAY.Models
     public class Movie
     {
         public static List<Movie> MoviesList = new List<Movie>();
+        
         public int Id { get; set; }
 
         public string Title { get; set; }
