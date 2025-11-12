@@ -1,8 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TASKFORSHAY.Models;
 
 namespace TASKFORSHAY.Controllers
@@ -11,43 +9,61 @@ namespace TASKFORSHAY.Controllers
     [Route("api/[controller]")]
     public class MoviesController : ControllerBase
     {
+        // GET api/movies - מחזיר את כל הסרטים או מסנן לפי משך (Query String)
         [HttpGet]
-        public IActionResult GetMovies()
+        public ActionResult<List<Movie>> GetAll([FromQuery] int? maxDuration)
         {
             try
             {
-                var movies = Movie.Read();
-                return Ok(movies);
+                if (maxDuration.HasValue)
+                {
+                    return Movie.ReadByDuration(maxDuration.Value);
+                }
+
+                return Movie.Read();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return Problem($"Server error: {ex.Message}");
             }
         }
 
-        [HttpPost]
-        public IActionResult actionResult([FromBody] Movie movie)
+        // GET api/movies/rating/7.5 - מסנן לפי דירוג מינימלי
+        [HttpGet("rating/{minRating:double}")]
+        public ActionResult<List<Movie>> GetByRating(double minRating)
         {
             try
             {
-                if (movie == null)
-                {
-                    return BadRequest("Movie data is null.");
-                }
-                bool isInserted = movie.Insert();
-                if (isInserted)
-                {
-                    return Ok("Movie added successfully.");
-                }
-                else
-                {
-                    return Conflict("A movie with the same Id already exists.");
-                }
-
+                return Movie.ReadByRating(minRating);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return Problem($"Server error: {ex.Message}");
+            }
+        }
+
+        // POST api/movies - הוספת סרט חדש
+        [HttpPost]
+        public ActionResult<Movie> Insert([FromBody] Movie movie)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool success = movie.Insert();
+                if (!success)
+                {
+                    return Conflict("Movie with the same Id already exists.");
+                }
+
+                return movie; // מחזיר את הסרט שנוסף
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Server error: {ex.Message}");
             }
         }
     }

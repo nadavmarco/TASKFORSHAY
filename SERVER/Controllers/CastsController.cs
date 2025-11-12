@@ -1,8 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TASKFORSHAY.Models;
 
 namespace TASKFORSHAY.Controllers
@@ -11,36 +9,42 @@ namespace TASKFORSHAY.Controllers
     [Route("api/[controller]")]
     public class CastsController : ControllerBase
     {
+        // GET api/casts - מחזיר את כל השחקנים
         [HttpGet]
-        public IActionResult GetCasts()
-        {
-            var casts = Cast.Read();
-            return Ok(casts);
-        }
-        [HttpPost]
-        public IActionResult actionResult([FromBody] Cast cast)
+        public ActionResult<List<Cast>> GetAll()
         {
             try
             {
-                if (cast == null)
-                {
-                    return BadRequest("Cast data is null.");
-                }
-
-                bool isInserted = cast.Insert();
-
-                if (isInserted)
-                {
-                    return Ok("Cast added successfully.");
-                }
-                else
-                {
-                    return Conflict("A cast with the same CastId already exists.");
-                }
+                return Cast.Read();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return Problem($"Server error: {ex.Message}");
+            }
+        }
+
+        // POST api/casts - הוספת שחקן חדש
+        [HttpPost]
+        public ActionResult<Cast> Insert([FromBody] Cast cast)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                bool success = cast.Insert();
+                if (!success)
+                {
+                    return Conflict("Cast with the same Id already exists.");
+                }
+
+                return cast; // מחזיר את השחקן שנוסף
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Server error: {ex.Message}");
             }
         }
     }
