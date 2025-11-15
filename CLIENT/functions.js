@@ -1,11 +1,11 @@
 // functions.js
 
-// אם ה-CLIENT וה-API באותו פרויקט, מספיק /api
-const API_BASE = "/api";
+// ←←← להחליף לכתובת שלך אם שונה
+const API_BASE = "http://localhost:5011/api";
 
 // ---------------------- Movies / Wish List ----------------------
 
-// רינדור רשימת סרטים לקונטיינר
+// רינדור רשימת סרטים
 function renderMoviesList(moviesArray, containerId, showAddButton) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -17,6 +17,7 @@ function renderMoviesList(moviesArray, containerId, showAddButton) {
     card.className = "movie-card";
 
     const title = document.createElement("h3");
+    // camelCase כי ה-API מחזיר title, releaseYear וכו'
     title.textContent = `${movie.title} (${movie.releaseYear})`;
 
     const img = document.createElement("img");
@@ -50,7 +51,7 @@ function renderMoviesList(moviesArray, containerId, showAddButton) {
   });
 }
 
-// שולח סרט שנבחר לשרת – POST /api/Movies
+// POST /api/Movies – הוספת סרט ל-Wish List
 async function addMovieToWishList(movie) {
   try {
     const response = await fetch(`${API_BASE}/Movies`, {
@@ -120,7 +121,7 @@ async function getMoviesByDurationFromServer(maxDuration) {
   }
 }
 
-// GET /api/Movies – רשימת ה-Wish List השמורה בצד שרת
+// GET /api/Movies – להביא את ה-Wish List מהשרת
 async function getWishListFromServer() {
   try {
     const response = await fetch(`${API_BASE}/Movies`);
@@ -140,7 +141,7 @@ async function getWishListFromServer() {
 
 // ---------------------- Cast ----------------------
 
-// מביא את רשימת השחקנים מהשרת ומרנדר לטבלה
+// GET /api/Casts – טעינה ורינדור
 async function loadCastsAndRender() {
   try {
     const response = await fetch(`${API_BASE}/Casts`);
@@ -176,7 +177,6 @@ function renderCastTable(casts) {
     tdRole.textContent = cast.role;
 
     const tdDob = document.createElement("td");
-    // תאריך יפה
     const date = cast.dateOfBirth ? new Date(cast.dateOfBirth) : null;
     tdDob.textContent = date ? date.toISOString().substring(0, 10) : "";
 
@@ -193,7 +193,7 @@ function renderCastTable(casts) {
   });
 }
 
-// קורא את הנתונים מהטופס
+// קריאת נתוני הטופס
 function getCastFromForm() {
   return {
     id: parseInt(document.getElementById("castId").value),
@@ -204,26 +204,22 @@ function getCastFromForm() {
   };
 }
 
-// ולידציות לטופס Cast (Form validations)
+// ולידציות
 function validateCast(cast) {
   const errors = [];
 
   if (isNaN(cast.id) || cast.id <= 0) {
     errors.push("Id must be a positive number");
   }
-
   if (!cast.name || cast.name.length < 2) {
     errors.push("Name must be at least 2 characters");
   }
-
   if (!cast.role || cast.role.length < 2) {
     errors.push("Role must be at least 2 characters");
   }
-
   if (!cast.dateOfBirth) {
     errors.push("Date of birth is required");
   }
-
   if (!cast.country || cast.country.length < 2) {
     errors.push("Country must be at least 2 characters");
   }
@@ -233,9 +229,7 @@ function validateCast(cast) {
 
 function clearCastErrors() {
   const div = document.getElementById("castErrors");
-  if (div) {
-    div.textContent = "";
-  }
+  if (div) div.textContent = "";
 }
 
 function showCastErrors(errors) {
@@ -252,7 +246,7 @@ function showCastErrors(errors) {
   div.appendChild(ul);
 }
 
-// שליחת Cast חדש לשרת – POST /api/Casts
+// POST /api/Casts – הוספת שחקן
 async function submitCastToServer(cast) {
   try {
     const response = await fetch(`${API_BASE}/Casts`, {

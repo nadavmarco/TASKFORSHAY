@@ -1,36 +1,35 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 var builder = WebApplication.CreateBuilder(args);
 
-// מוסיפים שירותי Controllers ו־Swagger
+//Cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMyClient",
+        policy =>
+        {
+            policy.WithOrigins("http://127.0.0.1:5500") // my port Live Server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// Add services to the container.
+
 builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// הגדרת CORS כדי לאפשר גישה מהדפדפן המקומי
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("OpenCors", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
-
 var app = builder.Build();
 
-// סביבת פיתוח - מאפשרת Swagger
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection(); 
-app.UseCors("OpenCors");
+app.UseHttpsRedirection();
+app.UseCors("AllowMyClient");
 app.UseAuthorization();
 
 app.MapControllers();

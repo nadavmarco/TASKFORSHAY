@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ---------------------- Home Page (movies) ----------------------
 
 function initHomePage() {
-  // רינדור כל הסרטים מתוך movie.js (הקובץ המצורף ע"י המרצה)
+  // רינדור כל הסרטים מתוך movie.js (קובץ המרצה)
   if (typeof movies !== "undefined" && Array.isArray(movies)) {
     renderMoviesList(movies, "moviesContainer", true);
   }

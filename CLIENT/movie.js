@@ -1,4 +1,4 @@
-[
+const movies = [
     {
       "id": 1,
       "title": "The Shawshank Redemption",
@@ -600,6 +600,4 @@
         "genre": "Drama",
         "photoUrl": "https://m.media-amazon.com/images/M/MV5BOTI0MzcxMTYtZDVkMy00NjY1LTgyMTYtZmUxN2M3NmQ2NWJhXkEyXkFqcGdeQXVyMTQxNzMzNDI@.jpg"
       }
-
-
-]
+];
