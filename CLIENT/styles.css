@@ -1,0 +1,188 @@
+/* כללי */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #111;
+  color: #f5f5f5;
+  line-height: 1.5;
+}
+
+main {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px 40px;
+}
+
+/* כותרת עליונה ותפריט */
+header {
+  background-color: #222;
+  padding: 16px 20px;
+  border-bottom: 2px solid #444;
+}
+
+header h1 {
+  margin-bottom: 8px;
+}
+
+nav a {
+  color: #ffd54f;
+  text-decoration: none;
+  margin-right: 12px;
+  font-size: 0.95rem;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* כותרות סקשנים */
+section {
+  margin-top: 24px;
+}
+
+section h2 {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 4px;
+}
+
+/* פילטורים בעמוד הראשי */
+#filters {
+  background-color: #1c1c1c;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-row label {
+  min-width: 160px;
+}
+
+/* אינפוטים וכפתורים */
+input[type="number"],
+input[type="text"],
+input[type="date"] {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #111;
+  color: #f5f5f5;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ffd54f;
+}
+
+button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #ffd54f;
+  color: #111;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #ffca28;
+}
+
+/* כרטיסי סרטים */
+.movies-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.movie-card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 12px;
+  width: 230px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.movie-card h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.movie-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.movie-card p {
+  font-size: 0.85rem;
+}
+
+.movie-card button {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+/* טופס Cast */
+form#castForm {
+  background-color: #1c1c1c;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  max-width: 500px;
+}
+
+form#castForm div {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+form#castForm label {
+  margin-bottom: 4px;
+}
+
+/* טבלת Cast */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+th,
+td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+th {
+  background-color: #222;
+}
+
+/* הודעות שגיאה */
+.error {
+  color: #ff6b6b;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>
+        vrvrrvvr
+    </p>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cast</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Cast Management</h1>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="wishlist.html">Wish List</a> |
+      <a href="cast.html">Cast</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Add New Cast Member</h2>
+
+      <form id="castForm" novalidate>
+        <div>
+          <label for="castId">Id:</label>
+          <input type="number" id="castId" required min="1" />
+        </div>
+
+        <div>
+          <label for="castName">Name:</label>
+          <input type="text" id="castName" required minlength="2" />
+        </div>
+
+        <div>
+          <label for="castRole">Role:</label>
+          <input type="text" id="castRole" required minlength="2" />
+        </div>
+
+        <div>
+          <label for="castDob">Date of Birth:</label>
+          <input type="date" id="castDob" required />
+        </div>
+
+        <div>
+          <label for="castCountry">Country:</label>
+          <input type="text" id="castCountry" required minlength="2" />
+        </div>
+
+        <button type="submit">Add Cast</button>
+      </form>
+
+      <div id="castErrors" class="error"></div>
+    </section>
+
+    <section>
+      <h2>Cast Members (from server)</h2>
+      <table id="castTable">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Date of Birth</th>
+            <th>Country</th>
+          </tr>
+        </thead>
+        <tbody id="castTableBody">
+          <!-- ימולא מה־JS -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="/CLIENT/functions.js"></script>
+  <script src="/CLIENT/index.js"></script>
+</body>
+</html>
