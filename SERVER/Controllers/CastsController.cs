@@ -11,40 +11,37 @@ namespace TASKFORSHAY.Controllers
     {
         // GET api/casts - מחזיר את כל השחקנים
         [HttpGet]
-        public ActionResult<List<Cast>> GetAll()
+        public IActionResult GetCasts()
         {
-            try
-            {
-                return Cast.Read();
-            }
-            catch (Exception ex)
-            {
-                return Problem($"Server error: {ex.Message}");
-            }
+            var casts = Cast.Read();
+            return Ok(casts);
         }
 
         // POST api/casts - הוספת שחקן חדש
         [HttpPost]
-        public ActionResult<Cast> Insert([FromBody] Cast cast)
+         public IActionResult actionResult([FromBody] Cast cast)
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (cast == null)
                 {
-                    return BadRequest(ModelState);
+                    return BadRequest("Cast data is null.");
                 }
 
-                bool success = cast.Insert();
-                if (!success)
-                {
-                    return Conflict("Cast with the same Id already exists.");
-                }
+                bool isInserted = cast.Insert();
 
-                return cast; // מחזיר את השחקן שנוסף
+                if (isInserted)
+                {
+                    return Ok("Cast added successfully.");
+                }
+                else
+                {
+                    return Conflict("A cast with the same CastId already exists.");
+                }
             }
             catch (Exception ex)
             {
-                return Problem($"Server error: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
