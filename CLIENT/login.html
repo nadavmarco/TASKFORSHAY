@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login / Register</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<header>
+  <h1>Authentication</h1>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="wishlist.html">Wish List</a> |
+    <a href="cast.html">Cast</a> |
+    <a href="addMovie.html">Add Movie</a> |
+    <b>Login</b>
+  </nav>
+  <div id="userBox" style="margin-top:8px;"></div>
+</header>
+
+<main style="display:flex; gap:24px; flex-wrap:wrap;">
+  <section style="flex:1; min-width:280px;">
+    <h2>Register</h2>
+    <form id="registerForm" novalidate>
+      <div>
+        <label>User Name:</label>
+        <input type="text" id="regUserName" required minlength="2" />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input type="email" id="regEmail" required />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input type="password" id="regPassword" required minlength="4" />
+      </div>
+      <button type="submit">Register</button>
+    </form>
+    <div id="registerErrors" class="error"></div>
+  </section>
+
+  <section style="flex:1; min-width:280px;">
+    <h2>Login</h2>
+    <form id="loginForm" novalidate>
+      <div>
+        <label>Email:</label>
+        <input type="email" id="loginEmail" required />
+      </div>
+      <div>
+        <label>Password:</label>
+        <input type="password" id="loginPassword" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div id="loginErrors" class="error"></div>
+  </section>
+</main>
+
+<script src="functions.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>

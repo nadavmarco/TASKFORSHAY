@@ -1,96 +1,37 @@
-// index.js
-
-document.addEventListener("DOMContentLoaded", () => {
-  // עמוד הבית (סרטים + סינון)
-  if (document.getElementById("moviesContainer")) {
-    initHomePage();
-  }
-
-  // עמוד ה-Wish List
-  if (document.getElementById("wishlistContainer")) {
-    initWishlistPage();
-  }
-
-  // עמוד ה-Cast
-  if (document.getElementById("castForm")) {
-    initCastPage();
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  if (document.getElementById("moviesContainer")) initHomePage();
+  if (document.getElementById("wishlistContainer")) initWishlistPage();
+  if (document.getElementById("castTableBody")) loadCastsAndRender();
 });
 
-// ---------------------- Home Page (movies) ----------------------
-
+// ---------------------- Home Page ----------------------
 function initHomePage() {
-  // רינדור כל הסרטים מתוך movie.js (קובץ המרצה)
-  if (typeof movies !== "undefined" && Array.isArray(movies)) {
-    renderMoviesList(movies, "moviesContainer", true);
-  }
-
-  const ratingBtn = document.getElementById("filterByRatingBtn");
-  const durationBtn = document.getElementById("filterByDurationBtn");
-
-  ratingBtn.addEventListener("click", async () => {
-    const ratingInput = document.getElementById("ratingInput");
-    const minRating = parseFloat(ratingInput.value);
-
-    if (isNaN(minRating)) {
-      alert("Please enter a numeric rating");
-      return;
-    }
-
-    const filtered = await getMoviesByRatingFromServer(minRating);
-    if (filtered) {
-      renderMoviesList(filtered, "moviesContainer", true);
-    }
+  getAllMoviesFromServer().then(function (moviesFromDb) {
+    renderMoviesList(moviesFromDb, "moviesContainer", true);
   });
 
-  durationBtn.addEventListener("click", async () => {
-    const durationInput = document.getElementById("durationInput");
-    const maxDuration = parseInt(durationInput.value);
+  document.getElementById("filterByRatingBtn").addEventListener("click", function () {
+    const minRating = parseFloat(document.getElementById("ratingInput").value);
+    if (isNaN(minRating)) return alert("Please enter a numeric rating");
 
-    if (isNaN(maxDuration)) {
-      alert("Please enter movie duration (minutes)");
-      return;
-    }
-
-    const filtered = await getMoviesByDurationFromServer(maxDuration);
-    if (filtered) {
+    getMoviesByRatingFromServer(minRating).then(function (filtered) {
       renderMoviesList(filtered, "moviesContainer", true);
-    }
+    });
+  });
+
+  document.getElementById("filterByDurationBtn").addEventListener("click", function () {
+    const maxDuration = parseInt(document.getElementById("durationInput").value);
+    if (isNaN(maxDuration)) return alert("Please enter movie duration");
+
+    getMoviesByDurationFromServer(maxDuration).then(function (filtered) {
+      renderMoviesList(filtered, "moviesContainer", true);
+    });
   });
 }
 
 // ---------------------- Wish List Page ----------------------
-
-async function initWishlistPage() {
-  const wishlist = await getWishListFromServer();
-  if (wishlist) {
+function initWishlistPage() {
+  getAllMoviesFromServer().then(function (wishlist) {
     renderMoviesList(wishlist, "wishlistContainer", false);
-  }
-}
-
-// ---------------------- Cast Page ----------------------
-
-async function initCastPage() {
-  await loadCastsAndRender();
-
-  const form = document.getElementById("castForm");
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearCastErrors();
-
-    const cast = getCastFromForm();
-    const errors = validateCast(cast);
-
-    if (errors.length > 0) {
-      showCastErrors(errors);
-      return;
-    }
-
-    const success = await submitCastToServer(cast);
-    if (success) {
-      form.reset();
-      await loadCastsAndRender();
-    }
   });
 }

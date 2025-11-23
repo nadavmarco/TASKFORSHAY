@@ -1,6 +1,3 @@
-// functions.js
-
-// ←←← להחליף לכתובת שלך אם שונה
 const API_BASE = "http://localhost:5011/api";
 
 // ---------------------- Movies / Wish List ----------------------
@@ -17,15 +14,12 @@ function renderMoviesList(moviesArray, containerId, showAddButton) {
     card.className = "movie-card";
 
     const title = document.createElement("h3");
-    // camelCase כי ה-API מחזיר title, releaseYear וכו'
     title.textContent = `${movie.title} (${movie.releaseYear})`;
 
     const img = document.createElement("img");
     img.src = movie.photoUrl || "";
     img.alt = movie.title;
-    img.onerror = () => {
-      img.style.display = "none";
-    };
+    img.onerror = () => (img.style.display = "none");
 
     const details = document.createElement("p");
     details.textContent = `Rating: ${movie.rating} | Duration: ${movie.duration} min | Genre: ${movie.genre}`;
@@ -41,8 +35,8 @@ function renderMoviesList(moviesArray, containerId, showAddButton) {
     if (showAddButton) {
       const btn = document.createElement("button");
       btn.textContent = "Add to Wish List";
-      btn.addEventListener("click", async () => {
-        await addMovieToWishList(movie);
+      btn.addEventListener("click", function () {
+        addMovieToWishList(movie);
       });
       card.appendChild(btn);
     }
@@ -51,111 +45,92 @@ function renderMoviesList(moviesArray, containerId, showAddButton) {
   });
 }
 
-// POST /api/Movies – הוספת סרט ל-Wish List
-async function addMovieToWishList(movie) {
-  try {
-    const response = await fetch(`${API_BASE}/Movies`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(movie),
+// GET /api/Movies – כל הסרטים מהשרת
+function getAllMoviesFromServer() {
+  return fetch(`${API_BASE}/Movies`)
+    .then(function (response) {
+      if (!response.ok) {
+        return response.text().then(function (msg) {
+          throw new Error("Error getting movies: " + msg);
+        });
+      }
+      return response.json();
     });
+}
 
-    if (response.ok) {
-      alert("Movie added to Wish List");
-    } else if (response.status === 409) {
-      const msg = await response.text();
-      alert(msg || "Movie already exists in Wish List");
-    } else {
-      const msg = await response.text();
-      alert("Error adding movie: " + msg);
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while adding movie");
-  }
+// POST /api/Movies – הוספת סרט (Wish List)
+function addMovieToWishList(movie) {
+  fetch(`${API_BASE}/Movies`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(movie),
+  })
+    .then(function (response) {
+      if (response.ok) {
+        alert("Movie added to Wish List");
+      } else {
+        return response.text().then(function (msg) {
+          alert("Error adding movie: " + msg);
+        });
+      }
+    })
+    .catch(function (err) {
+      console.error(err);
+      alert("Network error while adding movie");
+    });
 }
 
 // GET /api/Movies/byRating/{minRating}
-async function getMoviesByRatingFromServer(minRating) {
-  try {
-    const response = await fetch(`${API_BASE}/Movies/byRating/${minRating}`);
-    if (response.ok) {
-      return await response.json();
-    } else if (response.status === 404) {
-      alert("No movies found for this rating");
+function getMoviesByRatingFromServer(minRating) {
+  return fetch(`${API_BASE}/Movies/byRating/${minRating}`)
+    .then(function (response) {
+      if (response.ok) return response.json();
+      if (response.status === 404) return [];
+      return response.text().then(function (msg) {
+        throw new Error(msg);
+      });
+    })
+    .catch(function (err) {
+      alert("Error filtering by rating: " + err.message);
       return [];
-    } else {
-      const msg = await response.text();
-      alert("Error getting movies by rating: " + msg);
-      return [];
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while filtering by rating");
-    return [];
-  }
+    });
 }
 
 // GET /api/Movies/duration?maxDuration=XX
-async function getMoviesByDurationFromServer(maxDuration) {
-  try {
-    const response = await fetch(
-      `${API_BASE}/Movies/duration?maxDuration=${maxDuration}`
-    );
-    if (response.ok) {
-      return await response.json();
-    } else if (response.status === 404) {
-      alert("No movies found for this duration");
+function getMoviesByDurationFromServer(maxDuration) {
+  return fetch(`${API_BASE}/Movies/duration?maxDuration=${maxDuration}`)
+    .then(function (response) {
+      if (response.ok) return response.json();
+      if (response.status === 404) return [];
+      return response.text().then(function (msg) {
+        throw new Error(msg);
+      });
+    })
+    .catch(function (err) {
+      alert("Error filtering by duration: " + err.message);
       return [];
-    } else {
-      const msg = await response.text();
-      alert("Error getting movies by duration: " + msg);
-      return [];
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while filtering by duration");
-    return [];
-  }
-}
-
-// GET /api/Movies – להביא את ה-Wish List מהשרת
-async function getWishListFromServer() {
-  try {
-    const response = await fetch(`${API_BASE}/Movies`);
-    if (response.ok) {
-      return await response.json();
-    } else {
-      const msg = await response.text();
-      alert("Error getting wish list: " + msg);
-      return [];
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while getting wish list");
-    return [];
-  }
+    });
 }
 
 // ---------------------- Cast ----------------------
 
-// GET /api/Casts – טעינה ורינדור
-async function loadCastsAndRender() {
-  try {
-    const response = await fetch(`${API_BASE}/Casts`);
-    if (response.ok) {
-      const casts = await response.json();
+function loadCastsAndRender() {
+  fetch(`${API_BASE}/Casts`)
+    .then(function (response) {
+      if (!response.ok) {
+        return response.text().then(function (msg) {
+          throw new Error(msg);
+        });
+      }
+      return response.json();
+    })
+    .then(function (casts) {
       renderCastTable(casts);
-    } else {
-      const msg = await response.text();
-      alert("Error getting casts: " + msg);
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while getting casts");
-  }
+    })
+    .catch(function (err) {
+      console.error(err);
+      alert("Error getting casts: " + err.message);
+    });
 }
 
 function renderCastTable(casts) {
@@ -164,114 +139,59 @@ function renderCastTable(casts) {
 
   tbody.innerHTML = "";
 
-  casts.forEach((cast) => {
+  casts.forEach(function (cast) {
     const tr = document.createElement("tr");
-
-    const tdId = document.createElement("td");
-    tdId.textContent = cast.id;
-
-    const tdName = document.createElement("td");
-    tdName.textContent = cast.name;
-
-    const tdRole = document.createElement("td");
-    tdRole.textContent = cast.role;
-
-    const tdDob = document.createElement("td");
-    const date = cast.dateOfBirth ? new Date(cast.dateOfBirth) : null;
-    tdDob.textContent = date ? date.toISOString().substring(0, 10) : "";
-
-    const tdCountry = document.createElement("td");
-    tdCountry.textContent = cast.country;
-
-    tr.appendChild(tdId);
-    tr.appendChild(tdName);
-    tr.appendChild(tdRole);
-    tr.appendChild(tdDob);
-    tr.appendChild(tdCountry);
-
+    tr.innerHTML = `
+      <td>${cast.id}</td>
+      <td>${cast.name}</td>
+      <td>${cast.role || ""}</td>
+      <td>${cast.dateOfBirth ? cast.dateOfBirth.substring(0,10) : ""}</td>
+      <td>${cast.country || ""}</td>
+      <td>${cast.photoUrl || ""}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
 
-// קריאת נתוני הטופס
-function getCastFromForm() {
-  return {
-    id: parseInt(document.getElementById("castId").value),
-    name: document.getElementById("castName").value.trim(),
-    role: document.getElementById("castRole").value.trim(),
-    dateOfBirth: document.getElementById("castDob").value,
-    country: document.getElementById("castCountry").value.trim(),
-  };
-}
+// ---------------------- Auth UI (all pages) ----------------------
+document.addEventListener("DOMContentLoaded", setupAuthUI);
 
-// ולידציות
-function validateCast(cast) {
-  const errors = [];
+function setupAuthUI() {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  if (isNaN(cast.id) || cast.id <= 0) {
-    errors.push("Id must be a positive number");
-  }
-  if (!cast.name || cast.name.length < 2) {
-    errors.push("Name must be at least 2 characters");
-  }
-  if (!cast.role || cast.role.length < 2) {
-    errors.push("Role must be at least 2 characters");
-  }
-  if (!cast.dateOfBirth) {
-    errors.push("Date of birth is required");
-  }
-  if (!cast.country || cast.country.length < 2) {
-    errors.push("Country must be at least 2 characters");
-  }
+  const userBox = document.getElementById("userBox");
+  const loginLink = document.getElementById("loginLink");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  return errors;
-}
+  if (user) {
+    if (userBox) userBox.textContent = `מחובר: ${user.userName}`;
 
-function clearCastErrors() {
-  const div = document.getElementById("castErrors");
-  if (div) div.textContent = "";
-}
-
-function showCastErrors(errors) {
-  const div = document.getElementById("castErrors");
-  if (!div) return;
-
-  div.innerHTML = "";
-  const ul = document.createElement("ul");
-  errors.forEach((err) => {
-    const li = document.createElement("li");
-    li.textContent = err;
-    ul.appendChild(li);
-  });
-  div.appendChild(ul);
-}
-
-// POST /api/Casts – הוספת שחקן
-async function submitCastToServer(cast) {
-  try {
-    const response = await fetch(`${API_BASE}/Casts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(cast),
-    });
-
-    if (response.ok) {
-      alert("Cast added successfully");
-      return true;
-    } else if (response.status === 409) {
-      const msg = await response.text();
-      alert(msg || "Cast with same Id already exists");
-      return false;
-    } else {
-      const msg = await response.text();
-      alert("Error adding cast: " + msg);
-      return false;
+    if (loginLink) {
+      loginLink.textContent = "Logout";
+      loginLink.href = "#";
+      loginLink.onclick = function (e) {
+        e.preventDefault();
+        localStorage.removeItem("user");
+        alert("Logged out");
+        window.location.href = "index.html";
+      };
     }
-  } catch (err) {
-    console.error(err);
-    alert("Network error while adding cast");
-    return false;
+
+    if (logoutBtn) {
+      logoutBtn.style.display = "inline-block";
+      logoutBtn.onclick = function () {
+        localStorage.removeItem("user");
+        alert("Logged out");
+        window.location.href = "index.html";
+      };
+    }
+  } else {
+    if (userBox) userBox.textContent = "";
+    if (loginLink) {
+      loginLink.textContent = "Login";
+      loginLink.href = "login.html";
+      loginLink.onclick = null;
+    }
+    if (logoutBtn) logoutBtn.style.display = "none";
   }
 }

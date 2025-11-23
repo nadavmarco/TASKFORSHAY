@@ -26,7 +26,7 @@ namespace TASKFORSHAY.DAL
                 paramDic.Add("@Email", user.Email);
                 paramDic.Add("@Password", user.Password);
 
-                command = CreateCommandWithStoredProcedure("sp_RegisterUser", connection, paramDic);
+                command = CreateCommandWithStoredProcedure("RegisterUser_sp", connection, paramDic);
 
                 rowsAffected = command.ExecuteNonQuery();
             }

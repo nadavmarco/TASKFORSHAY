@@ -12,8 +12,7 @@ namespace TASKFORSHAY.DAL
         private SqlConnection connection;
         private SqlCommand command;
 
-        // מחזיר את כל ה-Cast מה-DB בלבד
-        // תוודא שה-SP שלך נקרא בדיוק: sp_GetAllCast
+        // מחזיר את כל ה-Cast מה-DB
         public List<Cast> GetAllCastFromDB()
         {
             List<Cast> lst = new List<Cast>();
@@ -21,7 +20,9 @@ namespace TASKFORSHAY.DAL
             try
             {
                 connection = Connect();
-                command = CreateCommandWithStoredProcedure("sp_GetAllCast", connection, null);
+
+                // ✅ שם SP לפי ה-SQL החדש
+                command = CreateCommandWithStoredProcedure("GetAllCast_sp", connection, null);
 
                 reader = command.ExecuteReader();
 
@@ -31,12 +32,16 @@ namespace TASKFORSHAY.DAL
 
                     cast.Id = Convert.ToInt32(reader["Id"]);
                     cast.Name = reader["Name"].ToString();
-                    cast.Role = reader["Role"].ToString();
-                    cast.DateOfBirth = Convert.ToDateTime(reader["DateOfBirth"]);
-                    cast.PhotoUrl = reader["PhotoUrl"].ToString();
 
-                    // אם תוסיף בטבלה Country תרצה גם לקרוא אותה כאן
-                    // cast.Country = reader["Country"].ToString();
+                    // NULL-safe
+                    cast.Role = reader["Role"] == DBNull.Value ? null : reader["Role"].ToString();
+                    cast.PhotoUrl = reader["PhotoUrl"] == DBNull.Value ? null : reader["PhotoUrl"].ToString();
+                    cast.Country = reader["Country"] == DBNull.Value ? null : reader["Country"].ToString();
+
+                    // NULL-safe Date
+                    cast.DateOfBirth = reader["DateOfBirth"] == DBNull.Value
+                        ? DateTime.MinValue
+                        : Convert.ToDateTime(reader["DateOfBirth"]);
 
                     lst.Add(cast);
                 }
@@ -48,14 +53,10 @@ namespace TASKFORSHAY.DAL
             finally
             {
                 if (reader != null && !reader.IsClosed)
-                {
                     reader.Close();
-                }
 
                 if (connection != null && connection.State != ConnectionState.Closed)
-                {
                     connection.Close();
-                }
             }
 
             return lst;

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Movie</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<header>
+  <h1>Add Movie</h1>
+  <nav>
+    <a href="index.html">Home</a> |
+    <a href="wishlist.html">Wish List</a> |
+    <a href="cast.html">Cast</a> |
+    <a href="addMovie.html">Add Movie</a> |
+    <a href="login.html" id="loginLink">Login</a>
+    <button id="logoutBtn" style="display:none; margin-left:8px;">Logout</button>
+  </nav>
+  <div id="userBox" style="margin-top:8px;"></div>
+</header>
+
+<main>
+  <section id="mustLoginMsg" style="display:none;">
+    <h2>צריך להתחבר כדי להוסיף סרט</h2>
+    <p>גש ל־Login ואז חזור לכאן.</p>
+  </section>
+
+  <section id="addMovieSection" style="display:none;">
+    <h2>Add Movie to Database</h2>
+
+    <form id="movieForm" novalidate>
+      <div><label>Title:</label><input type="text" id="title" required></div>
+      <div><label>Rating:</label><input type="number" id="rating" min="0" max="10" step="0.1" required></div>
+      <div><label>Income:</label><input type="number" id="income" min="0" required></div>
+      <div><label>Release Year:</label><input type="number" id="releaseYear" min="1900" max="2100" required></div>
+      <div><label>Duration (min):</label><input type="number" id="duration" min="1" required></div>
+      <div><label>Language:</label><input type="text" id="language" required></div>
+      <div><label>Description:</label><input type="text" id="description" required></div>
+      <div><label>Genre:</label><input type="text" id="genre" required></div>
+      <div><label>Photo URL:</label><input type="text" id="photoUrl" required></div>
+
+      <button type="submit">Add Movie</button>
+    </form>
+
+    <div id="movieErrors" class="error"></div>
+  </section>
+</main>
+
+<script src="functions.js"></script>
+<script src="addMovie.js"></script>
+</body>
+</html>

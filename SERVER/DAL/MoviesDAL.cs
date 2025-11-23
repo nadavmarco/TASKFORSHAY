@@ -23,7 +23,7 @@ namespace TASKFORSHAY.DAL
                 connection = Connect();
 
                 // עדכן את שם ה-SP אם אצלך הוא שונה
-                command = CreateCommandWithStoredProcedure("sp_GetAllMovies", connection, null);
+               command = CreateCommandWithStoredProcedure("GetAllMovies_sp", connection, null);
 
                 reader = command.ExecuteReader();
 
@@ -89,7 +89,7 @@ namespace TASKFORSHAY.DAL
                 paramDic.Add("@PhotoUrl", movie.PhotoUrl);
 
                 // עדכן אם שם ה-SP אצלך שונה
-                command = CreateCommandWithStoredProcedure("sp_InsertMovie", connection, paramDic);
+                command = CreateCommandWithStoredProcedure("InsertMovie_sp", connection, paramDic);
 
                 rowsAffected = command.ExecuteNonQuery();
             }

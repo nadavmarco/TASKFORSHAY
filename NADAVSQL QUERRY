@@ -1,0 +1,219 @@
+USE Movies;
+GO
+
+-------------------------
+-- DROP TABLES (בסדר נכון)
+-------------------------
+IF OBJECT_ID('dbo.Cast_Movies', 'U') IS NOT NULL
+    DROP TABLE dbo.Cast_Movies;
+GO
+
+IF OBJECT_ID('dbo.MovieCast', 'U') IS NOT NULL
+    DROP TABLE dbo.MovieCast;
+GO
+
+IF OBJECT_ID('dbo.[Cast]', 'U') IS NOT NULL
+    DROP TABLE dbo.[Cast];
+GO
+
+IF OBJECT_ID('dbo.Movies', 'U') IS NOT NULL
+    DROP TABLE dbo.Movies;
+GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+    DROP TABLE dbo.Users;
+GO
+
+
+-------------------------
+-- CREATE TABLES מחדש
+-------------------------
+CREATE TABLE dbo.Users (
+    Id         INT IDENTITY(1,1) PRIMARY KEY,
+    UserName   NVARCHAR(50) NOT NULL,
+    Email      NVARCHAR(200) NOT NULL UNIQUE,
+    [Password] NVARCHAR(200) NOT NULL
+);
+GO
+
+CREATE TABLE dbo.Movies (
+    Id            INT IDENTITY(1,1) PRIMARY KEY,
+    Title         NVARCHAR(200) NOT NULL,
+    Rating        FLOAT NOT NULL,
+    Income        DECIMAL(18,2) NOT NULL,
+    ReleaseYear   INT NOT NULL,
+    Duration      INT NOT NULL,
+    [Language]    NVARCHAR(50) NOT NULL,
+    [Description] NVARCHAR(MAX) NOT NULL,
+    Genre         NVARCHAR(100) NOT NULL,
+    PhotoUrl      NVARCHAR(500) NOT NULL
+);
+GO
+
+CREATE TABLE dbo.[Cast] (
+    Id          INT IDENTITY(1,1) PRIMARY KEY,
+    [Name]      NVARCHAR(100) NOT NULL,
+    Role        NVARCHAR(200) NULL,
+    DateOfBirth DATE NULL,
+    PhotoUrl    NVARCHAR(500) NULL,
+    Country     NVARCHAR(100) NULL,
+    CONSTRAINT CK_Cast_DateOfBirth CHECK (DateOfBirth <= GETDATE())
+);
+GO
+
+CREATE TABLE dbo.Cast_Movies (
+    MovieId  INT NOT NULL,
+    CastId   INT NOT NULL,
+    RoleName NVARCHAR(200) NULL,
+
+    CONSTRAINT PK_Cast_Movies PRIMARY KEY (MovieId, CastId),
+
+    CONSTRAINT FK_CastMovies_Movies FOREIGN KEY (MovieId)
+        REFERENCES dbo.Movies(Id) ON DELETE CASCADE,
+
+    CONSTRAINT FK_CastMovies_Cast FOREIGN KEY (CastId)
+        REFERENCES dbo.[Cast](Id) ON DELETE CASCADE
+);
+GO
+
+
+-------------------------
+-- INSERT SAMPLE DATA
+-------------------------
+INSERT INTO dbo.Users (UserName, Email, [Password]) VALUES
+(N'admin', N'admin@example.com', N'1234'),
+(N'lital', N'lital@example.com', N'l12345'),
+(N'shay',  N'shay@example.com',  N'pass789');
+GO
+
+INSERT INTO dbo.Movies
+(Title, Rating, Income, ReleaseYear, Duration, [Language], [Description], Genre, PhotoUrl)
+VALUES
+(N'Inception', 8.8, 825532764.00, 2010, 148, N'English',
+ N'Test description', N'Sci-Fi', N'https://example.com/inception.jpg'),
+(N'The Dark Knight', 9.0, 1004558444.00, 2008, 152, N'English',
+ N'Test description', N'Action', N'https://example.com/darkknight.jpg'),
+(N'Titanic', 7.9, 2187463944.00, 1997, 195, N'English',
+ N'Test description', N'Drama', N'https://example.com/titanic.jpg');
+GO
+
+INSERT INTO dbo.[Cast] ([Name], Role, DateOfBirth, PhotoUrl, Country)
+VALUES
+(N'Leonardo DiCaprio', N'Actor', '1974-11-11', N'https://example.com/leo.jpg', N'USA'),
+(N'Christian Bale',    N'Actor', '1974-01-30', N'https://example.com/bale.jpg', N'UK'),
+(N'Kate Winslet',      N'Actress','1975-10-05', N'https://example.com/winslet.jpg', N'UK');
+GO
+
+INSERT INTO dbo.Cast_Movies (MovieId, CastId, RoleName) VALUES
+(1, 1, N'Cobb'),
+(2, 2, N'Batman'),
+(3, 1, N'Jack Dawson'),
+(3, 3, N'Rose');
+GO
+
+
+-------------------------
+-- STORED PROCEDURES
+-------------------------
+CREATE OR ALTER PROCEDURE dbo.GetAllMovies_sp
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT * FROM dbo.Movies;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.InsertMovie_sp
+    @Title        NVARCHAR(200),
+    @Rating       FLOAT,
+    @Income       DECIMAL(18,2),
+    @ReleaseYear  INT,
+    @Duration     INT,
+    @Language     NVARCHAR(50),
+    @Description  NVARCHAR(MAX),
+    @Genre        NVARCHAR(100),
+    @PhotoUrl     NVARCHAR(500)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.Movies
+    (Title, Rating, Income, ReleaseYear, Duration, [Language], [Description], Genre, PhotoUrl)
+    VALUES
+    (@Title, @Rating, @Income, @ReleaseYear, @Duration,
+     @Language, @Description, @Genre, @PhotoUrl);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.GetAllCast_sp
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT * FROM dbo.[Cast];
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_RegisterUser
+    @UserName  NVARCHAR(50),
+    @Email     NVARCHAR(200),
+    @Password  NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM dbo.Users WHERE Email = @Email)
+    BEGIN
+        RAISERROR(N'Email already exists', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO dbo.Users (UserName, Email, [Password])
+    VALUES (@UserName, @Email, @Password);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.LoginUser_sp
+    @Email     NVARCHAR(200),
+    @Password  NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT Id, UserName, Email
+    FROM dbo.Users
+    WHERE Email = @Email
+      AND [Password] = @Password;
+END
+GO
+
+
+EXEC GetAllMovies_sp;
+EXEC GetAllCast_sp;
+
+USE Movies;
+GO
+
+-- מוחקים SP ישן אם קיים
+IF OBJECT_ID('dbo.sp_RegisterUser', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_RegisterUser;
+GO
+
+-- יוצרים SP חדש עם _sp בסוף
+CREATE OR ALTER PROCEDURE dbo.RegisterUser_sp
+    @UserName  NVARCHAR(50),
+    @Email     NVARCHAR(200),
+    @Password  NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM dbo.Users WHERE Email = @Email)
+    BEGIN
+        RAISERROR(N'Email already exists', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO dbo.Users (UserName, Email, [Password])
+    VALUES (@UserName, @Email, @Password);
+END
+GO

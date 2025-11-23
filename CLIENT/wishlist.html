@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Wish List</title>
   <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
   <header>
@@ -11,8 +12,12 @@
     <nav>
       <a href="index.html">Home</a> |
       <a href="wishlist.html">Wish List</a> |
-      <a href="cast.html">Cast</a>
+      <a href="cast.html">Cast</a> |
+      <a href="addMovie.html">Add Movie</a> |
+      <a href="login.html" id="loginLink">Login</a>
+      <button id="logoutBtn" style="display:none; margin-left:8px;">Logout</button>
     </nav>
+    <div id="userBox" style="margin-top:8px;"></div>
   </header>
 
   <main>
@@ -22,7 +27,6 @@
     </section>
   </main>
 
-  <script src="movie.js"></script>
   <script src="functions.js"></script>
   <script src="index.js"></script>
 </body>
