@@ -1,17 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
-
+using TASKFORSHAY.DAL;
 
 namespace TASKFORSHAY.Models
 {
     public class Cast
     {
-        public static List<Cast> CastsList = new List<Cast>();
-
-       
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -19,30 +13,43 @@ namespace TASKFORSHAY.Models
         public string Role { get; set; }
 
         public DateTime DateOfBirth { get; set; }
-        public string PhotoUrl { get; set; }
 
+        public string PhotoUrl { get; set; }
 
         public string Country { get; set; }
 
-        // Insert() - הוספת שחקן חדש
+        // Insert() - מיועד להוספה למסד הנתונים (כשתוסיף SP)
+        // כרגע נשאיר את המתודה מוכנה אבל בלי מימוש
         public bool Insert()
         {
-            foreach (var cast in CastsList)
+            try
             {
-                if (cast.Id == this.Id)
-                {
-                    return false; // שחקן עם אותו Id כבר קיים
-                }
-            }
+                // אם בעתיד תיצור SP ל־InsertCast, זה יהיה כאן:
+                // CastDAL dal = new CastDAL();
+                // int rows = dal.InsertCastToDB(this);
+                // return rows > 0;
 
-            CastsList.Add(this);
-            return true; // נוסף בהצלחה
+                // כרגע אין הוספה ל-DB, ולכן נחזיר false
+                return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        // Read() - מחזיר את כל השחקנים
+        // Read() - החזרת כל ה-Cast מהדאטאבייס דרך DAL
         public static List<Cast> Read()
         {
-            return CastsList;
+            try
+            {
+                CastDAL dal = new CastDAL();
+                return dal.GetAllCastFromDB();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

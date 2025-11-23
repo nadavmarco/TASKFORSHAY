@@ -9,39 +9,18 @@ namespace TASKFORSHAY.Controllers
     [Route("api/[controller]")]
     public class CastsController : ControllerBase
     {
-        // GET api/casts - מחזיר את כל השחקנים
+        // GET api/casts - מחזיר את כל השחקנים מה-DB דרך Cast.Read()
         [HttpGet]
         public IActionResult GetCasts()
         {
-            var casts = Cast.Read();
-            return Ok(casts);
-        }
-
-        // POST api/casts - הוספת שחקן חדש
-        [HttpPost]
-         public IActionResult actionResult([FromBody] Cast cast)
-        {
             try
             {
-                if (cast == null)
-                {
-                    return BadRequest("Cast data is null.");
-                }
-
-                bool isInserted = cast.Insert();
-
-                if (isInserted)
-                {
-                    return Ok("Cast added successfully.");
-                }
-                else
-                {
-                    return Conflict("A cast with the same CastId already exists.");
-                }
+                List<Cast> casts = Cast.Read();
+                return Ok(casts);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "Error retrieving cast data from database.");
             }
         }
     }
