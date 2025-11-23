@@ -22,7 +22,7 @@ namespace TASKFORSHAY.DAL
                 connection = Connect();
 
                 // ✅ שם SP לפי ה-SQL החדש
-                command = CreateCommandWithStoredProcedure("GetAllCast_sp", connection, null);
+                command = CreateCommandWithStoredProcedure("sp_GetAllCast", connection, null);
 
                 reader = command.ExecuteReader();
 

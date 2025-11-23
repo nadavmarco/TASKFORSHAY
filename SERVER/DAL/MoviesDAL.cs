@@ -23,7 +23,7 @@ namespace TASKFORSHAY.DAL
                 connection = Connect();
 
                 // עדכן את שם ה-SP אם אצלך הוא שונה
-               command = CreateCommandWithStoredProcedure("GetAllMovies_sp", connection, null);
+               command = CreateCommandWithStoredProcedure("sp_GetAllMovies", connection, null);
 
                 reader = command.ExecuteReader();
 
